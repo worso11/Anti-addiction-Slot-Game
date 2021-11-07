@@ -8,13 +8,16 @@ public class SymbolController : MonoBehaviour
 {
     [SerializeField]
     public bool rigged;
+    public int _lines;
     public int[] row1;
     public int[] row2;
     public int[] row3;
     public Sprite[] coins;
 
     private WinningController _winningController;
+    private FinancialController _financialController;
     private PlayButton _playButton;
+    private MoneyPanel _moneyPanel;
     private int[][] _symbols;
     private bool[,] _symbolsMovingArray = new bool[5,4];
     private bool _symbolsMoving;
@@ -28,9 +31,13 @@ public class SymbolController : MonoBehaviour
     private void Start()
     {
         _winningController = GetComponent<WinningController>();
+        _financialController = GetComponent<FinancialController>();
         _playButton = GameObject.FindGameObjectWithTag("PlayButton").GetComponent<PlayButton>();
+        _moneyPanel = GameObject.FindGameObjectWithTag("MoneyPanel").GetComponent<MoneyPanel>();
 
         _cols = new[] {-1, -1, -1, -1, -1};
+
+        //Invoke("TestMathematics", 1);
     }
 
     private void Update()
@@ -45,6 +52,7 @@ public class SymbolController : MonoBehaviour
             if (IsSpinOver())
             {
                 _winningController.SpawnWinningStars();
+                StartCoroutine(_moneyPanel.UpdateMoneyPanelText(_financialController.ReturnWin()));
                 _playButton.UnpressPlayButton();
                 _symbolsMoving = false;
             }
@@ -57,6 +65,23 @@ public class SymbolController : MonoBehaviour
                 StartGame();
             }
         }
+    }
+
+    private void TestMathematics()
+    {
+        float number = _financialController.ReturnWin();
+        Debug.Log(number);
+        
+        for (int i = 0; i < number; i++)
+        {
+            GenerateSymbols();
+        }
+        
+        float result = _financialController.ReturnWin();
+        var rtp = result / number;
+        
+        Debug.Log($"Wygrana: {result}");
+        Debug.Log($"RTP: {rtp}");
     }
 
     private void GenerateSymbols()
@@ -162,6 +187,11 @@ public class SymbolController : MonoBehaviour
     public bool GetGameStatus()
     {
         return _gameReady;
+    }
+
+    public bool GetSymbolsMoving()
+    {
+        return _symbolsMoving;
     }
     
     public void SetSymbolAsMoving(int row, int col)
