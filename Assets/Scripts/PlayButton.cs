@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class PlayButton : Button
 {
+    private SymbolController _symbolController;
     private TextMeshProUGUI _textMeshPro;
 
     private void Start()
     {
-        Initialize();
-        
+        _symbolController = GameObject.FindGameObjectWithTag("Board").GetComponent<SymbolController>();
         _textMeshPro = GameObject.FindGameObjectWithTag("PlayButtonText").GetComponent<TextMeshProUGUI>();
     }
 
@@ -17,8 +17,7 @@ public class PlayButton : Button
         switch (PressedStatus)
         {
             case "Unpressed":
-                PressPlayButton();
-                SymbolController.StartGame();
+                _symbolController.StartGame();
                 break;
             
             case "Pressed":
@@ -42,10 +41,5 @@ public class PlayButton : Button
     public string GetPressedStatus()
     {
         return PressedStatus;
-    }
-
-    public void SetText(string text)
-    {
-        _textMeshPro.text = text;
     }
 }

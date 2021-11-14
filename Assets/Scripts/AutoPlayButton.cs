@@ -5,15 +5,11 @@ public class AutoPlayButton : Button
 {
     private SymbolController _symbolController;
     private TextMeshProUGUI _textMeshPro;
-    private PlayButton _playButton;
 
     private void Start()
     {
-        Initialize();
-        
         _symbolController = GameObject.FindGameObjectWithTag("Board").GetComponent<SymbolController>();
         _textMeshPro = GameObject.FindGameObjectWithTag("AutoPlayButtonText").GetComponent<TextMeshProUGUI>();
-        _playButton = GameObject.FindGameObjectWithTag("PlayButton").GetComponent<PlayButton>();
     }
 
     private void OnMouseDown()
@@ -22,12 +18,10 @@ public class AutoPlayButton : Button
         {
             case "Unpressed":
                 PressAutoPlayButton();
-                _symbolController.SetAutoPlay(true);
                 break;
             
             case "Pressed":
                 UnpressAutoPlayButton();
-                _symbolController.SetAutoPlay(false);
                 break;
         }
     }
@@ -36,11 +30,13 @@ public class AutoPlayButton : Button
     {
         PressButton();
         _textMeshPro.text = "STOP\nAUTO";
+        _symbolController.SetAutoPlay(true);
     }
     
-    private void UnpressAutoPlayButton()
+    public void UnpressAutoPlayButton()
     {
         UnpressButton();
         _textMeshPro.text = "AUTO\nSPIN";
+        _symbolController.SetAutoPlay(false);
     }
 }

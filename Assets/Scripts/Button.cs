@@ -5,17 +5,14 @@ public class Button : MonoBehaviour
 {
     public Color unpressedColor;
 
-    protected SymbolController SymbolController;
     private SpriteRenderer _spriteRendererBottom;
     private SpriteRenderer _spriteRendererTop;
     private Color _pressedColor;
     private Color _pressedOuterColor;
     protected string PressedStatus;
 
-    internal void Initialize()
+    internal void Awake()
     {
-        SymbolController = GameObject.FindGameObjectWithTag("Board").GetComponent<SymbolController>();
-        
         _pressedColor = unpressedColor;
         _pressedOuterColor = unpressedColor;
         _pressedColor.r -= 0.2f;

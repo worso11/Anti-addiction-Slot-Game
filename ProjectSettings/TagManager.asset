@@ -14,6 +14,12 @@ TagManager:
   - MoneyPanel
   - LinesValue
   - BetValue
+  - LimitController
+  - MessagePanel
+  - AutoPlayButton
+  - TempoController
+  - LDWsDescription
+  - LDWsText
   layers:
   - Default
   - TransparentFX

@@ -5,11 +5,18 @@ using UnityEngine;
 
 public class FinancialController : MonoBehaviour
 {
+    private LimitController _limitController;
     private int[] _symbolsRarity;
     private float[,] _winValues;
     private float _bet = 1f;
     private float _winSum = 1000f;
-    
+
+    private void Awake()
+    {
+        _limitController = GameObject.FindGameObjectWithTag("LimitController").GetComponent<LimitController>();
+        _winSum = _limitController.MoneyDeposit;
+    }
+
     private void Start()
     {
         _symbolsRarity = new[] {0, 0, 0, 0, 1, 1, 1, 2};
@@ -33,10 +40,21 @@ public class FinancialController : MonoBehaviour
         };
     }
 
+    public bool PutBet()
+    {
+        if (_limitController.CheckMoney(_winSum, _bet) && _limitController.CheckWageringLimit(_bet))
+        {
+            _limitController.WageringLimit -= _bet;
+            _winSum -= _bet;
+
+            return true;
+        }
+
+        return false;
+    }
+    
     public void GetWin(int[,] lines, int linesNumber)
     {
-        _winSum -= _bet;
-        
         for (var i = 0; i < lines.GetLength(0); i++)
         {
             if (lines[i, 0] > 0)

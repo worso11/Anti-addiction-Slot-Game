@@ -9,15 +9,21 @@ public class MoneyPanel : MonoBehaviour
 {
     private TextMeshProUGUI _textMeshPro;
     private FinancialController _financialController;
+    private GameObject _ldwsDescription;
+    private TextMeshProUGUI _ldwsDescriptionText;
     private float _moneyValue;
     private Color _defaultColor;
+    private bool _beforeFirstLdw;
 
     private void Start()
     {
         _textMeshPro = GetComponent<TextMeshProUGUI>();
         _financialController = GameObject.FindGameObjectWithTag("Board").GetComponent<FinancialController>();
+        _ldwsDescription = GameObject.FindGameObjectWithTag("LDWsDescription").gameObject;
+        _ldwsDescriptionText = GameObject.FindGameObjectWithTag("LDWsText").GetComponent<TextMeshProUGUI>();
         _moneyValue = _financialController.ReturnWin();
         _defaultColor = _textMeshPro.color;
+        _beforeFirstLdw = true;
         
         _textMeshPro.SetText(_financialController.ReturnWin().ToString("F2") + "$");
     }
@@ -32,7 +38,7 @@ public class MoneyPanel : MonoBehaviour
         while (timeElapsed < (totalTime == 0 ? 1 : totalTime))
         {
             _textMeshPro.SetText(Mathf.Lerp(_moneyValue, moneyBalance, timeElapsed / totalTime).ToString("F2") + "$");
-            timeElapsed += Time.deltaTime;
+            timeElapsed += Time.fixedDeltaTime;
 
             yield return null;
         }
@@ -40,5 +46,15 @@ public class MoneyPanel : MonoBehaviour
         _textMeshPro.SetText(moneyBalance.ToString("F2") + "$");
         _textMeshPro.color = _defaultColor;
         _moneyValue = moneyBalance;
+
+        if (!(moneyDifference < 1f) || !(moneyDifference > 0f) || !_beforeFirstLdw) yield break;
+        
+        for (var i = 0; i < _ldwsDescription.transform.childCount; i++)
+        {
+            _ldwsDescription.transform.GetChild(i).GetComponent<SpriteRenderer>().enabled = true;
+        }
+
+        _ldwsDescriptionText.enabled = true;
+        _beforeFirstLdw = false;
     }
 }

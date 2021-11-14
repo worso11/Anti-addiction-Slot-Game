@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Number : MonoBehaviour
 {
+    public int lineNumber;
+    
     private GameObject _parent;
     private Color _color;
     private Color _hoverColor;

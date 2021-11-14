@@ -16,7 +16,9 @@ public class SymbolController : MonoBehaviour
 
     private WinningController _winningController;
     private FinancialController _financialController;
+    private TempoController _tempoController;
     private PlayButton _playButton;
+    private AutoPlayButton _autoPlayButton;
     private MoneyPanel _moneyPanel;
     private int[][] _symbols;
     private bool[,] _symbolsMovingArray = new bool[5,4];
@@ -32,7 +34,9 @@ public class SymbolController : MonoBehaviour
     {
         _winningController = GetComponent<WinningController>();
         _financialController = GetComponent<FinancialController>();
+        _tempoController = GameObject.FindGameObjectWithTag("TempoController").GetComponent<TempoController>();
         _playButton = GameObject.FindGameObjectWithTag("PlayButton").GetComponent<PlayButton>();
+        _autoPlayButton = GameObject.FindGameObjectWithTag("AutoPlayButton").GetComponent<AutoPlayButton>();
         _moneyPanel = GameObject.FindGameObjectWithTag("MoneyPanel").GetComponent<MoneyPanel>();
 
         _cols = new[] {-1, -1, -1, -1, -1};
@@ -42,28 +46,30 @@ public class SymbolController : MonoBehaviour
 
     private void Update()
     {
-        if (_symbolsMoving)
+        if (_symbolsMoving || Time.timeScale == 0) return;
+        
+        if (Input.GetKeyDown(KeyCode.Space) || _autoPlay)
         {
-            if (IsSpin() && _gameReady)
-            {
-                _gameReady = false;
-            }
-            
-            if (IsSpinOver())
-            {
-                _winningController.SpawnWinningStars();
-                StartCoroutine(_moneyPanel.UpdateMoneyPanelText(_financialController.ReturnWin()));
-                _playButton.UnpressPlayButton();
-                _symbolsMoving = false;
-            }
+            StartGame(true);
         }
-        else
+    }
+
+    private void FixedUpdate()
+    {
+        if (!_symbolsMoving) return;
+        
+        if (IsSpin() && _gameReady)
         {
-            if (Input.GetKeyDown(KeyCode.Space) || _autoPlay)
-            {
-                _playButton.PressPlayButton();
-                StartGame();
-            }
+            _gameReady = false;
+        }
+        else if (IsSpinOver() && !_gameReady)
+        {
+            _winningController.SpawnWinningStars();
+            StartCoroutine(_moneyPanel.UpdateMoneyPanelText(_financialController.ReturnWin()));
+            _playButton.UnpressPlayButton();
+            _tempoController.SetSpinAsFinished();
+
+            _symbolsMoving = false;
         }
     }
 
@@ -94,7 +100,7 @@ public class SymbolController : MonoBehaviour
         }
 
         _symbols = new [] {row1, row2, row3};
-        _shift = Random.Range(-0.4f, 0.4f);
+        _shift = Random.Range(-0.9f, 0.9f);
 
         _winningController.CheckForWin(_symbols);
     }
@@ -143,12 +149,23 @@ public class SymbolController : MonoBehaviour
         return _symbolsMovingArray.Cast<bool>().All(status => status);
     }
 
-    public void StartGame()
+    public void StartGame(bool spaceTrigger = false)
     {
+        if (!_financialController.PutBet())
+        {
+            if (_autoPlay)
+            {
+                _autoPlayButton.UnpressAutoPlayButton();
+            }
+            return;
+        }
+        
         WinningController.DestroyStars();
         GenerateSymbols();
         GenerateSpinningTime();
-
+        _playButton.PressPlayButton();
+        _tempoController.SetNewRound(spaceTrigger, _autoPlay);
+        
         _gameReady = true;
         _symbolsMoving = true;
     }

@@ -16,18 +16,28 @@ public class LinesButton : MonoBehaviour
     public void OnMouseOver()
     {
         _activeNumbersCount = _winningController.GetLinesNumber();
-        
-        for (var i = 0; i < _activeNumbersCount; i++)
+
+        foreach (var number in _numbers)
         {
-            _numbers[i].GetComponent<Number>().OnMouseOver();
+            var numberInstance = number.GetComponent<Number>();
+            
+            if (numberInstance.lineNumber <= _activeNumbersCount)
+            {
+                numberInstance.OnMouseOver();
+            }
         }
     }
 
     public void OnMouseExit()
     {
-        for (var i = 0; i < _activeNumbersCount; i++)
+        foreach (var number in _numbers)
         {
-            _numbers[i].GetComponent<Number>().OnMouseExit();
+            var numberInstance = number.GetComponent<Number>();
+            
+            if (numberInstance.lineNumber <= _activeNumbersCount)
+            {
+                numberInstance.OnMouseExit();
+            }
         }
     }
 }
