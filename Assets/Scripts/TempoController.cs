@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class TempoController : MonoBehaviour
 {
     private FinancialController _financialController;
+    private GratificationController _gratificationController;
     private MessagePanel _messagePanel;
     private TextMeshProUGUI _textMeshPro;
     private float _moneyBalance;
@@ -15,15 +17,19 @@ public class TempoController : MonoBehaviour
     private int _clicksNumber;
     private List<(TimeSpan RoundTime,int ClicksNumber,bool IsWon)> _tempoList = new List<(TimeSpan RoundTime, int ClicksNumber, bool isWon)>();
     private bool _isPlaying = true;
+    private int _roundsWithoutChecking = -1;
+    private string _flag = string.Empty;
 
     private void Start()
     {
         _financialController = GameObject.FindGameObjectWithTag("Board").GetComponent<FinancialController>();
+        _gratificationController = GameObject.FindGameObjectWithTag("GratificationController")
+            .GetComponent<GratificationController>();
         _messagePanel = GameObject.FindGameObjectWithTag("MessagePanel").GetComponent<MessagePanel>();
         _moneyBalance = _financialController.ReturnWin();
         _textMeshPro = transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
         
-        _messagePanel.SetTempoController();
+        _messagePanel.SetControllers();
     }
 
     void Update()
@@ -66,24 +72,24 @@ public class TempoController : MonoBehaviour
         Debug.Log(
             $"Average clicks when not won: {_tempoList.Where(x => !x.IsWon).Select(x => x.ClicksNumber).DefaultIfEmpty(0).Average()}");
         Debug.Log(
-            $"Average time when won: {_tempoList.Where(x => x.IsWon).Select(x => x.RoundTime.Milliseconds).DefaultIfEmpty(0).Average()}");
+            $"Average time when won: {_tempoList.Where(x => x.IsWon).Select(x => x.RoundTime.TotalMilliseconds).DefaultIfEmpty(0).Average()}");
         Debug.Log(
-            $"Average time when not won: {_tempoList.Where(x => !x.IsWon).Select(x => x.RoundTime.Milliseconds).DefaultIfEmpty(0).Average()}");
+            $"Average time when not won: {_tempoList.Where(x => !x.IsWon).Select(x => x.RoundTime.TotalMilliseconds).DefaultIfEmpty(0).Average()}");
     }
 
     private bool CheckIfPlayedFast()
     {
         var lastFiveRoundsTime = _tempoList.Select(x => x.RoundTime).Reverse().Take(5).Reverse().ToList();
         
-        if (lastFiveRoundsTime.Sum(x => x.Seconds) == 0)
+        if (lastFiveRoundsTime.Sum(x => x.TotalMilliseconds) < 1500f)
         {
-            if (lastFiveRoundsTime.Sum(x => x.Milliseconds) < 1500f)
-            {
-                _messagePanel.SetMessage("TooFast");
-                return true;
-            }
+            _flag = "TooFast";
+            
+            _messagePanel.SetMessage(_flag);
+            GenerateRoundsWithoutChecking();
+            return true;
         }
-
+        
         return false;
     }
 
@@ -93,13 +99,37 @@ public class TempoController : MonoBehaviour
 
         if (lastFiveClicksNumber.Sum() > 25)
         {
-            _messagePanel.SetMessage("TooMuchClicks");
+            _flag = "TooMuchClicks";
+            
+            _messagePanel.SetMessage(_flag);
+            GenerateRoundsWithoutChecking();
             return true;
         }
 
         return false;
     }
 
+    private bool CheckIfPlayedFastOnLose()
+    {
+        var lastFiveLostRoundsTime = _tempoList.Where(x => !x.IsWon).Select(x => x.RoundTime).Reverse().Take(5).Reverse().ToList();
+
+        if (lastFiveLostRoundsTime.Sum(x => x.TotalMilliseconds) < 1500f)
+        {
+            _flag = "TooFastOnLose";
+            
+            _messagePanel.SetMessage(_flag);
+            GenerateRoundsWithoutChecking();
+            return true;
+        }   
+        
+        return false;
+    }
+
+    private void GenerateRoundsWithoutChecking()
+    {
+        _roundsWithoutChecking = Random.Range(5, 15);
+    }
+    
     public void SetSpinAsFinished()
     {
         _isPlaying = false;
@@ -108,16 +138,32 @@ public class TempoController : MonoBehaviour
     
     public void SetNewRound(bool spaceTrigger, bool autoPlay)
     {
+        Debug.Log(_roundsWithoutChecking);
+        
         if (!_isPlaying && !autoPlay)
         {
             _tempoList.Add((DateTime.Now - _startRoundTime, _clicksNumber, _moneyBalance < _financialController.ReturnWin()));   
-        }
-
-        if (_tempoList.Count > 4)
-        {
-            if (!CheckIfPlayedFast())
+            
+            if (_tempoList.Count > 4 && _roundsWithoutChecking <= 0)
             {
-                CheckIfClickedFast();
+                if (!CheckIfPlayedFast())
+                {
+                    if (!CheckIfClickedFast() && _tempoList.Count(x => !x.IsWon) > 4) 
+                    {
+                        if (!CheckIfPlayedFastOnLose())
+                        {
+                            if (_roundsWithoutChecking == 0)
+                            {
+                                _gratificationController.GratificatePlayerWithCredit(_flag, 0.1f);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (_roundsWithoutChecking >= 0)
+            {
+                _roundsWithoutChecking -= 1;
             }
         }
 

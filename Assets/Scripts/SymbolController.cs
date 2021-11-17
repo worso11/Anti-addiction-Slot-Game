@@ -151,6 +151,8 @@ public class SymbolController : MonoBehaviour
 
     public void StartGame(bool spaceTrigger = false)
     {
+        _tempoController.SetNewRound(spaceTrigger, _autoPlay);
+        
         if (!_financialController.PutBet())
         {
             if (_autoPlay)
@@ -164,8 +166,7 @@ public class SymbolController : MonoBehaviour
         GenerateSymbols();
         GenerateSpinningTime();
         _playButton.PressPlayButton();
-        _tempoController.SetNewRound(spaceTrigger, _autoPlay);
-        
+
         _gameReady = true;
         _symbolsMoving = true;
     }

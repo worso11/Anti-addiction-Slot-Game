@@ -80,4 +80,9 @@ public class FinancialController : MonoBehaviour
     {
         _bet = bet;
     }
+
+    public void IncreaseWinSum(float increase)
+    {
+        _winSum += increase;
+    }
 }

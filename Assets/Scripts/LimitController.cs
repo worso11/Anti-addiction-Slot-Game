@@ -133,4 +133,9 @@ public class LimitController : MonoBehaviour
     {
         _gameReady = gameReady;
     }
+
+    public void IncreaseTimeLimit(float seconds)
+    {
+        _timeLimitTime = _timeLimitTime.AddSeconds(seconds);
+    }
 }

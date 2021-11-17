@@ -47,7 +47,7 @@ public class MoneyPanel : MonoBehaviour
         _textMeshPro.color = _defaultColor;
         _moneyValue = moneyBalance;
 
-        if (!(moneyDifference < 1f) || !(moneyDifference > 0f) || !_beforeFirstLdw) yield break;
+        if (!(moneyDifference > 0f) || !_beforeFirstLdw || !(moneyDifference < _financialController.GetBet())) yield break;
         
         for (var i = 0; i < _ldwsDescription.transform.childCount; i++)
         {

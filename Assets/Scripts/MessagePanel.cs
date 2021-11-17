@@ -6,12 +6,13 @@ using UnityEngine;
 
 public class MessagePanel : MonoBehaviour
 {
+    private TempoController _tempoController;
+    private GratificationController _gratificationController;
     private GameObject _message;
     private TextMeshProUGUI _messageHeader;
     private TextMeshProUGUI _messageDescription;
     private TextMeshProUGUI _messageSpace;
     private GameObject _symbolsTable;
-    private TempoController _tempoController;
 
     void Awake()
     {
@@ -28,8 +29,9 @@ public class MessagePanel : MonoBehaviour
             .gameObject;
     }
 
-    private IEnumerator DeactiveMessage(float waitTime)
+    private IEnumerator DeactiveMessage(string limitName, float waitTime, float readingTime)
     {
+        var endTime = DateTime.Now.AddSeconds(readingTime);
         _tempoController.SetIsPlaying(false);
         
         yield return new WaitForSecondsRealtime(waitTime);
@@ -47,13 +49,20 @@ public class MessagePanel : MonoBehaviour
         _message.SetActive(false);
         
         Time.timeScale = 1;
+
+        if (readingTime != 0f && endTime < DateTime.Now)
+        {
+            _gratificationController.GratificatePlayerWithTime(limitName, readingTime);
+        }
     }
     
     public void SetMessage(string limitName, float limit = 0f)
     {
         _symbolsTable.SetActive(false);
         Time.timeScale = 0;
+
         var waitTime = 2f;
+        var readingTime = 0f;
         
         switch (limitName)
         {
@@ -90,6 +99,7 @@ public class MessagePanel : MonoBehaviour
                 _symbolsTable.SetActive(true);
                 _messageSpace.enabled = true;
                 waitTime = 0.1f;
+                readingTime = 30f;
                 break;
             case "LDWsDescription":
                 _messageHeader.text = "Losses Disguised as Wins";
@@ -105,14 +115,32 @@ public class MessagePanel : MonoBehaviour
                 _messageDescription.text = "Zauważyliśmy u Ciebie zwiększone tempo wciskania lewego przycisku myszy lub klawisza spacji, które wynikać może z frustracji rogrywką.\n" +
                                            "Rozważ chwilę przerwy oraz spokojniejszą grę";
                 break;
+            case "TooFastOnLose":
+                _messageHeader.text = "Zwolnij :)";
+                _messageDescription.text = "Zauważyliśmy u Ciebie szybsze tempo gry w przypadku przegranych rund.\n" +
+                                           "Rozważ spowolnienie rozgrywki";
+                break;
+            case "GettingCredit":
+                _messageHeader.text = "Dobra robota!";
+                _messageDescription.text =
+                    $"W zamian za spokojniejszą rozgrywkę otrzymuje dodatkowe {limit}$ do kredytu oraz limitu zakładu";
+                break;
+            case "GettingTime":
+                _messageHeader.text = "Tak trzymaj!";
+                _messageDescription.text =
+                    $"Bardzo nas cieszy, że poświęcasz swój czas gry na czytanie naszych informacji. W ramach podziękowań otrzymujesz swój czas z powrotem!\n\n" +
+                    $"{limit} sekund zostało dodanych do limitu czasowego.";
+                break;
         }
         
         _message.SetActive(true);
-        StartCoroutine(nameof(DeactiveMessage), waitTime);
+        StartCoroutine(DeactiveMessage(limitName, waitTime, readingTime));
     }
 
-    public void SetTempoController()
+    public void SetControllers()
     {
         _tempoController = GameObject.FindGameObjectWithTag("TempoController").GetComponent<TempoController>();
+        _gratificationController = GameObject.FindGameObjectWithTag("GratificationController")
+            .GetComponent<GratificationController>();
     }
 }
