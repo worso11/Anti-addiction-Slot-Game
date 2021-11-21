@@ -9,7 +9,7 @@ public class MoneyPanel : MonoBehaviour
 {
     private TextMeshProUGUI _textMeshPro;
     private FinancialController _financialController;
-    private GameObject _ldwsDescription;
+    private DescriptionButton _ldwsDescription;
     private TextMeshProUGUI _ldwsDescriptionText;
     private float _moneyValue;
     private Color _defaultColor;
@@ -19,7 +19,7 @@ public class MoneyPanel : MonoBehaviour
     {
         _textMeshPro = GetComponent<TextMeshProUGUI>();
         _financialController = GameObject.FindGameObjectWithTag("Board").GetComponent<FinancialController>();
-        _ldwsDescription = GameObject.FindGameObjectWithTag("LDWsDescription").gameObject;
+        _ldwsDescription = GameObject.FindGameObjectWithTag("LDWsDescription").GetComponent<DescriptionButton>();
         _ldwsDescriptionText = GameObject.FindGameObjectWithTag("LDWsText").GetComponent<TextMeshProUGUI>();
         _moneyValue = _financialController.ReturnWin();
         _defaultColor = _textMeshPro.color;
@@ -47,14 +47,13 @@ public class MoneyPanel : MonoBehaviour
         _textMeshPro.color = _defaultColor;
         _moneyValue = moneyBalance;
 
-        if (!(moneyDifference > 0f) || !_beforeFirstLdw || !(moneyDifference < _financialController.GetBet())) yield break;
-        
-        for (var i = 0; i < _ldwsDescription.transform.childCount; i++)
-        {
-            _ldwsDescription.transform.GetChild(i).GetComponent<SpriteRenderer>().enabled = true;
-        }
+        if (!(moneyDifference > 0f) || !(moneyDifference < _financialController.GetBet())) yield break;
 
-        _ldwsDescriptionText.enabled = true;
+        _ldwsDescription.EnableChildsSprite(2);
+
+        if (!_beforeFirstLdw) yield break;
+        
+        _ldwsDescription.OnMouseDown();
         _beforeFirstLdw = false;
     }
 }

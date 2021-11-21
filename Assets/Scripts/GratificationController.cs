@@ -21,21 +21,49 @@ public class GratificationController : MonoBehaviour
         _usedFlags = new List<string>();
     }
 
-    public void GratificatePlayerWithCredit(string flag, float partOfDeposit)
+    public void GratificatePlayerWithCredits(string flag, float partOfDeposit)
     {
         if (CheckIfFlagUsed(flag)) return;
+
+        float extraCredit;
         
-        var extraCredit = Mathf.Floor(_initialDeposit/5f) * 5f * partOfDeposit;
+        if (_initialDeposit <= 5f)
+        {
+            extraCredit = _initialDeposit;
+        }
+        else if (_initialDeposit <= 5f/partOfDeposit)
+        {
+            extraCredit = 5f;
+        }
+        else
+        {
+            extraCredit  = Mathf.Floor(_initialDeposit/5f) * 5f * partOfDeposit;
+        }
+        
         _limitController.WageringLimit += extraCredit;
 
         _financialController.IncreaseWinSum(extraCredit);
-        _messagePanel.SetMessage("GettingCredit", extraCredit);
+
+        if (flag == "money" || flag == "WageringLimit")
+        {
+            _messagePanel.SetMessage("GettingCredit", extraCredit);
+        }
+        else
+        {
+            _messagePanel.SetMessage("RewardForSlowerPlay", extraCredit);
+        }
+        
         StartCoroutine(_moneyPanel.UpdateMoneyPanelText(_financialController.ReturnWin()));
     }
     
     public void GratificatePlayerWithTime(string flag, float bonusTime)
     {
         if (CheckIfFlagUsed(flag)) return;
+
+        if (flag == "TimeLimit")
+        {
+            bonusTime += _limitController.TimeLimit * 60f * 0.1f + 5f;
+        }
         
         _limitController.IncreaseTimeLimit(bonusTime);
         _messagePanel.SetMessage("GettingTime", bonusTime);

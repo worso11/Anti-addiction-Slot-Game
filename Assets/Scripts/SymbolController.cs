@@ -162,7 +162,7 @@ public class SymbolController : MonoBehaviour
             return;
         }
         
-        WinningController.DestroyStars();
+        _winningController.DestroyStars();
         GenerateSymbols();
         GenerateSpinningTime();
         _playButton.PressPlayButton();

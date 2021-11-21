@@ -154,7 +154,7 @@ public class TempoController : MonoBehaviour
                         {
                             if (_roundsWithoutChecking == 0)
                             {
-                                _gratificationController.GratificatePlayerWithCredit(_flag, 0.1f);
+                                _gratificationController.GratificatePlayerWithCredits(_flag, 0.1f);
                             }
                         }
                     }

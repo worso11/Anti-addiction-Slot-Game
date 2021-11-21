@@ -1825,6 +1825,7 @@ MonoBehaviour:
   limitName: LDWsDescription
   buttonTextTag: LDWsText
   destroyOnClick: 1
+  buttonAvailable: 0
 --- !u!58 &455920668
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -3049,6 +3050,7 @@ MonoBehaviour:
   limitName: GameDescription
   buttonTextTag: 
   destroyOnClick: 0
+  buttonAvailable: 1
 --- !u!1 &1014593050
 GameObject:
   m_ObjectHideFlags: 0
@@ -7571,9 +7573,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rigged: 0
   _lines: 5
-  row1: 0700000000000000040000000000000004000000
-  row2: 0000000004000000000000000400000000000000
-  row3: 0000000000000000040000000000000000000000
+  row1: 0000000000000000000000000400000004000000
+  row2: 0200000003000000040000000500000006000000
+  row3: 0100000002000000030000000400000005000000
   coins:
   - {fileID: 21300012, guid: 97e1c4e979e7562489a528a1c6562db6, type: 3}
   - {fileID: 21300024, guid: bc62d49bb205f034fbdfdf0cec6cda87, type: 3}

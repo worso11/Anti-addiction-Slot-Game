@@ -7,13 +7,15 @@ public class WinningController : MonoBehaviour
     public ParticleSystem stars;
 
     private FinancialController _financialController;
+    private DescriptionButton _ldwsDescriptionButton;
     private int[,] _winningCoins;
     private int[,] _winningLines;
-    private int _linesNumber = 1;
+    private int _linesNumber = 5;
 
     private void Start()
     {
         _financialController = GetComponent<FinancialController>();
+        _ldwsDescriptionButton = GameObject.FindGameObjectWithTag("LDWsDescription").GetComponent<DescriptionButton>();
         _winningCoins = new int[3, 5];
         _winningLines = new int[5, 2];
     }
@@ -111,7 +113,7 @@ public class WinningController : MonoBehaviour
         Array.Clear(_winningCoins, 0, _winningCoins.Length);
     }
 
-    public static void DestroyStars()
+    public void DestroyStars()
     {
         var starsToDestroy = GameObject.FindGameObjectsWithTag("Stars");
 
@@ -119,5 +121,7 @@ public class WinningController : MonoBehaviour
         {
             Destroy(star);
         }
+        
+        _ldwsDescriptionButton.CheckForDisable();
     }
 }
