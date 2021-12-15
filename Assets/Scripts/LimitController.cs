@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
 
 public class LimitController : MonoBehaviour
@@ -134,8 +131,18 @@ public class LimitController : MonoBehaviour
         _gameReady = gameReady;
     }
 
+    public bool GetGameReady()
+    {
+        return _gameReady;
+    }
+
     public void IncreaseTimeLimit(float seconds)
     {
         _timeLimitTime = _timeLimitTime.AddSeconds(seconds);
+    }
+    
+    public void IncreaseTimeAlert(float seconds)
+    {
+        _timeAlertTime = _timeAlertTime.AddSeconds(seconds);
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +7,6 @@ public class SymbolController : MonoBehaviour
 {
     [SerializeField]
     public bool rigged;
-    public int _lines;
     public int[] row1;
     public int[] row2;
     public int[] row3;

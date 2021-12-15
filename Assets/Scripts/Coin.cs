@@ -170,4 +170,14 @@ public class Coin : MonoBehaviour
                 break;
         }
     }
+
+    public string GetSymbolStatus()
+    {
+        return _status;
+    }
+
+    public int GetSymbolRow()
+    {
+        return _row;
+    }
 }

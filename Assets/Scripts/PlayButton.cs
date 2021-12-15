@@ -12,7 +12,7 @@ public class PlayButton : Button
         _textMeshPro = GameObject.FindGameObjectWithTag("PlayButtonText").GetComponent<TextMeshProUGUI>();
     }
 
-    private void OnMouseDown()
+    public void OnMouseDown()
     {
         switch (PressedStatus)
         {

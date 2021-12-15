@@ -12,7 +12,7 @@ public class AutoPlayButton : Button
         _textMeshPro = GameObject.FindGameObjectWithTag("AutoPlayButtonText").GetComponent<TextMeshProUGUI>();
     }
 
-    private void OnMouseDown()
+    public void OnMouseDown()
     {
         switch (PressedStatus)
         {
@@ -38,5 +38,10 @@ public class AutoPlayButton : Button
         UnpressButton();
         _textMeshPro.text = "AUTO\nSPIN";
         _symbolController.SetAutoPlay(false);
+    }
+    
+    public string GetPressedStatus()
+    {
+        return PressedStatus;
     }
 }

@@ -13,7 +13,7 @@ public class ChangeValueButton : MonoBehaviour
         _symbolController = GameObject.FindGameObjectWithTag("Board").GetComponent<SymbolController>();
     }
 
-    private void OnMouseDown()
+    public void OnMouseDown()
     {
         if (_symbolController.GetSymbolsMoving()) return;
         _value.ChangeValue(_isIncreasing);

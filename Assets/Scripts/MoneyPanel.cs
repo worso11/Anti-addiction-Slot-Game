@@ -1,7 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
 using TMPro;
 using UnityEngine;
 
@@ -10,7 +7,6 @@ public class MoneyPanel : MonoBehaviour
     private TextMeshProUGUI _textMeshPro;
     private FinancialController _financialController;
     private DescriptionButton _ldwsDescription;
-    private TextMeshProUGUI _ldwsDescriptionText;
     private float _moneyValue;
     private Color _defaultColor;
     private bool _beforeFirstLdw;
@@ -20,7 +16,6 @@ public class MoneyPanel : MonoBehaviour
         _textMeshPro = GetComponent<TextMeshProUGUI>();
         _financialController = GameObject.FindGameObjectWithTag("Board").GetComponent<FinancialController>();
         _ldwsDescription = GameObject.FindGameObjectWithTag("LDWsDescription").GetComponent<DescriptionButton>();
-        _ldwsDescriptionText = GameObject.FindGameObjectWithTag("LDWsText").GetComponent<TextMeshProUGUI>();
         _moneyValue = _financialController.ReturnWin();
         _defaultColor = _textMeshPro.color;
         _beforeFirstLdw = true;
